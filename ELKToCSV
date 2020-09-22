@@ -1,0 +1,25 @@
+input {
+ elasticsearch {
+    hosts => "<<<ELKURL>>>"
+    index => "<<<IndexName>>>"
+	user => "<<<UserName>>>"
+	password => "<<<Password>>>"
+	docinfo => true -- retrive metadata field in the export
+    query => '
+  {<<<DSLQuery>>> }'
+  }
+}
+filter {
+
+mutate { gsub => ["response" , "\r"," "] }  -- Remove new lines
+}
+
+output {
+   csv {
+        fields => ["[@metadata][_id]","[logId]","[scheme]".....]
+        path   => <<<PathToExport>>>"
+ 	csv_options => {
+	"col_sep" => "|" 
+	}
+	}
+}
