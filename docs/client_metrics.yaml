@@ -102,7 +102,6 @@ paths:
                         - start_date cannot be after end_date.
                     meta:
                       correlation_id: fc10b881-d9a0-4ab1-a6fd-a102db188f49
-                    
 components:
   schemas:
     client_id:
