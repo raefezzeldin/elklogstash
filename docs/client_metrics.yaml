@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  description: Client Metrics API
+  version: 1.0.0
+  title: Client Metrics API
+tags:
+  - name: client_metrics
+    description: SLA Adherence Metrics
+paths:
+  /client_metrics:
+    get:
+      tags:
+        - client_metrics
+      summary: Get metrics by client
+      description: Multiple metric values can be provided with comma separated strings
+      parameters:
+        - name: client_id
+          in: query
+          description: Client Id
+          required: true
+          schema:
+            type: number
+        - name: metrics
+          in: query
+          description: List os metrics name
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - sla_adherence
+                - high_risk_vulnerability_density
+        - name: start_date
+          in: query
+          description: Initial date in the format YYYY-MM-DD
+          required: false
+          schema:
+            type: string
+        - name: end_date
+          in: query
+          description: Final date in the format YYYY-MM-DD
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+              examples:
+                Success:
+                  value:
+                    client_id: 3030001
+                    metrics:
+                      - metric_name: high_risk_vulnerability_density
+                        last_calculated: '2022-05-16'
+                        data:
+                          - date: '2022-05-16'
+                            all: 43
+                            low: 5
+                            critical: 43.36
+                          - date: '2022-05-15'
+                            all: 43
+                            low: 5
+                            critical: 43.36
+                          - date: '2022-05-14'
+                            all: 43
+                            low: 5
+                            critical: 43.36
+                          - date: '2022-05-13'
+                            all: 43
+                            low: 5
+                            critical: 43.36
+                          - date: '2022-05-12'
+                            low: 20
+                            all: 173
+                            critical: 43.36
+                          - date: '2022-05-11'
+                            all: 694
+                            low: 80
+                            critical: 694.04
+                    meta:
+                      query_params:
+                        client_id: '3030001'
+                        metrics: high_risk_vulnerability_density
+                        start_date: '2022-05-10'
+                        end_date: '2022-05-16'
+                      correlation_id: fc10b881-d9a0-4ab1-a6fd-a102db188f49
+        '400':
+          description: failed operation
+          content:
+            application/json:
+              examples:
+                Invalid Date:
+                  value: 
+                    error:
+                      status_code: 400
+                      messages:
+                        - start_date cannot be after end_date.
+                    meta:
+                      correlation_id: fc10b881-d9a0-4ab1-a6fd-a102db188f49
+                    
+components:
+  schemas:
+    client_id:
+      type: number
+      example: 3030001
+    Metrics:
+      type: object
+      properties:
+        metric_name:
+          type: string
+          example: high_risk_vulnerability_density
+        last_calculated:
+          type: string
+          format: date
+          example: '2022-05-05'
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              all:
+                type: number
+              high:
+                type: number
+              medium:
+                type: number
+              low:
+                type: number
+          example:
+            Success:
+              value:
+                client_id: 3030001
+                metrics:
+                  - metric_name: high_risk_vulnerability_density
+                    last_calculated: '2022-05-16'
+                    data:
+                      - date: '2022-05-16'
+                        all: 43
+                        low: 5
+                        critical: 43.36
+                      - date: '2022-05-15'
+                        all: 43
+                        low: 5
+                        critical: 43.36
+                      - date: '2022-05-14'
+                        all: 43
+                        low: 5
+                        critical: 43.36
+                      - date: '2022-05-13'
+                        all: 43
+                        low: 5
+                        critical: 43.36
+                      - date: '2022-05-12'
+                        low: 20
+                        all: 173
+                        critical: 43.36
+                      - date: '2022-05-11'
+                        all: 694
+                        low: 80
+                        critical: 694.04
+                meta:
+                  query_params:
+                    client_id: '3030001'
+                    metrics: high_risk_vulnerability_density
+                    start_date: '2022-05-10'
+                    end_date: '2022-05-16'
+                  correlation_id: fc10b881-d9a0-4ab1-a6fd-a102db188f49
+    Meta:
+      type: object
+      properties:
+        query_params:
+          type: object
+          properties:
+            client_id:
+              type: number
+              example: 12345
+            metrics:
+              type: string
+              example: high_risk_vulnerability_density
+            start_date:
+              type: string
+              format: date
+              example: '2022-01-01'
+            end_date:
+              type: string
+              format: date
+              example: '2022-01-01'
+    Response:
+      type: object
+      properties:
+        client_id:
+          type: number
+          items:
+            $ref: '#/components/schemas/client_id'
+        metrics:
+          type: array
+          items:
+            $ref: '#/components/schemas/Metrics'
+        meta:
+          $ref: '#/components/schemas/Meta'
